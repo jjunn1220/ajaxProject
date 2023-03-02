@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="../css/header.css">
+<link rel="stylesheet" href="../css/add.css">
+<script type="text/javascript" src="../js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript">
+	function upload(){
+		var writer = sessionStorage.getItem( "ID" )
+		var title=$('#title').val();
+		var choise=$('#choise').val();
+		var content=$('#contentbox').val();
+		if(title==""){
+			alert("제목을 입력하세요");
+		}
+		else if(choise=="none"){
+			alert("카테고리를 선택하세요");
+		}
+		else if(content==""){
+			alert("글 내용을 작성하세요");
+		}
+		else{
+			$.ajax({
+				  url: 'http://localhost:8080/ajaxTest/html/add.do',
+				  type: 'post',
+				  contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+				  data: {writer:writer, title:title, choise:choise,content:content},
+				  dataType: "text",
+				  success: function(){
+					  alert("작성이 완료되었습니다.");
+					  location.href="/ajaxTest/html/feedList.html";
+				  }
+		    });
+		}
+	};
+	
+	function logout(){
+		sessionStorage.setItem("ID", null);
+		location.reload();
+	}
+
+	
+	$(function(){
+		var id=sessionStorage.getItem( "ID" );
+		if(id==null|| id=="null"){
+			$('<li/>').html('<a href="login.html">로그인</a>')
+			.appendTo($('.header').find('ul'));
+		}
+		else{
+			$('<li/>').html('<a href="#" onclick="logout()">로그아웃</a>')
+			.appendTo($('.header').find('ul'));
+		}
+	});
+</script>
+</head>
+<body>
+<div class="header">
+    <img src="../imgs/logo.png"/>
+	<ul>
+		<li><a href="#">처음으로</a></li>
+		<li><a href="#">객실안내</a></li>
+		<li><a href="feedList.html">커뮤니티</a></li>
+	</ul>
+</div>
+<div class="content">
+    <h1>COMMUNITY</h1>
+	<h2>글 올리기</h2>
+    <div class="uploadbox">
+        <h1>글작성</h1>
+           <div class="titlebox">
+               <select name="choise" id="choise">
+                   <option value="none"selected>선택</option>
+                   <option value="question">문의사항</option>
+                   <option value="review">이용후기</option>
+               </select>
+               <label>제목</label>
+               <input type="text" id="title" name="title"/><br/> <br/>
+           </div>
+           
+           <label></label>   
+           <textarea id="contentbox" style="width:770px; height: 200px; resize:none; font-size:20px;" name="contentbox"></textarea><br/> <br/>
+           
+           <div class="btnwrap">
+               <input type="submit" id="uploadbtn" value="업로드" onclick="upload()">
+               <label for="uploadbtn">업로드</label>
+           </div>
+    </div>
+</div>
+</body>
+</html>

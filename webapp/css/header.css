@@ -1,0 +1,42 @@
+.header{
+    /* opacity: 0.6; */
+    height: 50px;
+    padding: 1rem;
+    background-color:#7c5214;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+}
+.header>img{
+    width: 300px;
+}
+.header>ul{  
+    padding: 0px;   width : 800px;
+    position:absolute;
+    margin-left: 900px;
+    list-style: none;
+}
+.header>ul>li{ 
+    width: 100px;   float: left;   margin-right: 100px;
+}
+.header>ul>li>a,
+.submenu>li>a{
+    display: block;   
+    border-radius: 3px;
+    color: white;   
+    text-decoration: none;   
+    text-align: center;
+}
+.submenu{
+    position:absolute;	z-index:10;	width: 100px;
+    list-style: none;   border-top: 2px;   padding: 0px; display: none; 
+}
+.submenu>li{
+    border-top: 2px solid white;	background-color: white;
+}

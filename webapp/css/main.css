@@ -1,0 +1,19 @@
+.header{
+    opacity: 0.9;
+}
+.content{
+    position: relative;
+    position: fixed;
+    margin:0px auto;
+    padding:0px auto;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.content>img{
+    position: absolute;
+    min-width: 100%;
+    min-height: 130%;
+    object-fit: fill;
+}

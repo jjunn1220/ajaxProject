@@ -1,0 +1,104 @@
+.content{
+    z-index: -1;
+    position:absolute;
+	width:1050px;
+    height: 600px;
+    margin-top:5%;
+    margin-left: 25%;
+    padding:25px 30px;
+    box-sizing: border-box;
+}
+
+.loginbox{
+    width:500px;
+    height: 250px;
+    border: 1px solid #ccc;
+    margin: 0 auto;
+    margin-top:5%;
+    padding:25px 15px;
+    box-sizing: border-box;
+}
+form{
+    margin-top: 40px;
+}
+.loginbox h1{
+    width:100%;
+    height: 40px;
+    font-size: 28px;
+    color:#7c5214;
+    border-bottom: 1px solid #5c3a07;
+    padding-left:40px;
+    box-sizing: border-box;
+}
+
+#loginid, #loginpw{
+    width: 200px;
+    height: 25px;
+    border: 1px solid #999;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+.labelid{
+    font-size: 14px;
+    color:#666;
+    margin-left:15px;
+    margin-right: 22px;
+}
+.labelpw{
+    font-size: 14px;
+    color:#666;
+    margin-left:15px;
+    margin-right: 8px;
+}
+.content>h1{
+    border-bottom: solid 1px #5c3a07;
+}
+.search{
+    margin-left: 100px;
+}
+.search span{
+    font-size: 11px;
+    color:#999;
+}
+.search a{
+    font-size: 12px;
+    text-decoration: none;
+    background-color: rgb(255, 255, 255);
+    color:rgb(0, 0, 0);
+    padding:3px 5px;
+    border-radius: 3px;
+    margin-left: 3px;
+
+}
+.btnwrap{
+    width: 100%;
+    text-align: center;
+}
+.btnwrap label{
+    position: absolute;
+    left: -999em;
+}
+.btnwrap a{
+    width: 129px;
+    height: 35px;
+    background-color: rgb(255, 255, 255);
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 3px;
+    color: rgba(0, 0, 0, 0.705);
+    font-size: 12px;
+    line-height: 35px;
+}
+#loginbtn{
+    width:129px;
+    height: 35px;
+    border: none;
+    background-color: #7c5214;
+    border-radius: 3px;
+    color:#fff;
+    font-size: 14px;
+    font-weight: bold;
+    position: relative;
+    top: -80px;
+    right:-150px;
+}

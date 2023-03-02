@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="../css/header.css">
+<link rel="stylesheet" href="../css/feddList.css">
+<script type="text/javascript" src="../js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript">
+	//통신에 성공했을 때 실행될 function
+	var sucFunc = function(data){
+		//원래 있던 페이지와 리스트를 삭제 
+		$('tbody > tr').remove();
+		$('.page > a').remove();
+		var page;
+	    data.feed.forEach(function(ele){
+			maxCnt=ele.maxCnt;
+			page=ele.page;
+			
+			//받아온 값들을 테이블에 저장
+			$('<tr/>')
+				.append($('<td/>').html('<a href="detail.html?num='+ele.num+'&writer='+ele.writer+'">'+ele.num+'</a>'))	
+				.append($('<td/>').html('<a href="detail.html?num='+ele.num+'&writer='+ele.writer+'">'+ele.name+'</a>'))	
+				.append($('<td/>').html('<a href="detail.html?num='+ele.num+'&writer='+ele.writer+'">'+ele.writer+'</a>'))	
+				.append($('<td/>').html('<a href="detail.html?num='+ele.num+'&writer='+ele.writer+'">'+ele.addTime+'</a>'))
+			.appendTo('tbody');
+	    });
+	    //페이지를 생성하기 위한 부분 
+	    var start=5*parseInt((page-1)/5);
+		var end=start+5;
+		if(end>maxCnt)end=maxCnt;
+		if(start!=0){
+			$('.page').append($('<a href="#" id="p" onclick="pageClick('+(start-2)+')"/>').text("《"));
+		}
+		for(var i=start; i<end; i++){
+			$('.page').append($('<a href="#" id="p" onclick="pageClick('+i+')"/>').text(i+1));
+		}
+		if(end<maxCnt){
+			$('.page').append($('<a href="#" id="p" onclick="pageClick('+end+')"/>').text("》"));
+		}
+	};
+	//검색기능
+	function search(){
+		var word=$('.input').val();
+		var key=$('.key').val();
+		var page = 1;
+		if(word==""){
+			alert("검색어를 입력하세요");
+		}
+		else if(key=="none"){
+			alert("카테고리를 선택하세요");
+		}
+		//검색 카테고리와 검색어를 다 골랐다면 통신
+		else{
+			$.ajax({
+				  url: 'http://localhost:8080/ajaxTest/html/feedList.do',
+				  type: 'post',
+				  contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+				  data: {page:page, key:key, word:word},
+				  dataType: "json",
+				  success: sucFunc
+		    });
+		}
+	};
+	//페이지를 클릭했을때 일어나는 function
+	function pageClick(page){
+		page=page+1;
+		var word=$('.input').val();
+		var key=$('.key').val();
+		//검색하지 않았다면 검색 없는 부분과 통신(get)
+		if(word==""||key=="none"){
+			$.ajax({
+				  url: 'http://localhost:8080/ajaxTest/html/feedList.do',
+				  type: 'get',
+				  contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+				  data: {page:page},
+				  dataType: "json",
+				  success: sucFunc
+		    });
+		}
+		//검색했다면 검색어가 함께 전달되게 통신
+		else{
+			$.ajax({
+				  url: 'http://localhost:8080/ajaxTest/html/feedList.do',
+				  type: 'post',
+				  contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+				  data: {page:page, key:key, word:word},
+				  dataType: "json",
+				  success: sucFunc
+		    });
+		}
+	};
+	function upload(){
+		var id=sessionStorage.getItem( "ID" );
+		if(id==null || id=="null"){
+			location.href="login.html"
+		}
+		else{
+			location.href="add.html"
+		}
+	}
+	//처음 리스트 값 불러오기 
+	var listLoading=function(){
+		var maxCnt;
+		$.ajax({
+			  url: 'http://localhost:8080/ajaxTest/html/feedList.do',
+			  type: 'get',
+			  contentType: "application/json; charset=utf-8",
+			  dataType: "json",
+			  success: sucFunc
+		});
+	};
+	function logout(){
+		sessionStorage.setItem("ID", null);
+		location.reload();
+	}
+
+	$(function(){
+		var id=sessionStorage.getItem( "ID" );
+		if(id==null || id=="null"){
+			$('<li/>').html('<a href="login.html">로그인</a>')
+			.appendTo($('.header').find('ul'));
+		}
+		else{
+			$('<li/>').html('<a href="#" onclick="logout()">로그아웃</a>')
+			.appendTo($('.header').find('ul'));
+		}
+		listLoading();
+	});
+</script>
+</head>
+<body>
+<div class="header">
+    <img src="../imgs/logo.png"/>
+	<ul>
+		<li><a href="#">처음으로</a></li>
+		<li><a href="#">객실안내</a></li>
+		<li><a href="feedList.html">커뮤니티</a></li>
+	</ul>
+</div>
+<div class="content">
+	<h1>COMMUNITY</h1>
+	<h2>이용후기 및 문의사항</h2>
+	<table>
+		<thead>
+			<tr>
+				<th>게시글 번호</th>
+				<th></a>제목</th>
+				<th></a>작성자</th>
+				<th></a>작성일</th>
+			</tr>
+		</thead>
+		<tbody>
+			
+		</tbody>
+	</table>
+	<div class="page">
+		
+	</div>
+	<div class = "search">
+		<select name="choise" class="key">
+			<option value="none" selected>선택</option>
+			<option value="name">제목</option>
+			<option value="writer">작성자</option>
+		</select>
+		<input class="input" type="text" placeholder="검색어를 입력하세요." name="word">
+		<input type="submit" class = "searchpic" onclick="search()"></input>
+		<button onclick='upload()' class=wirte>글쓰기</button>
+	</div>
+</div>
+</body>
+</html>

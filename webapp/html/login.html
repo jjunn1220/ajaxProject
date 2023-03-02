@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="../css/header.css">
+<link rel="stylesheet" href="../css/login.css">
+<script type="text/javascript" src="../js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript">
+function login(){
+	var id=$("#loginid").val();
+	var password=$('#loginpw').val();
+	if(id==""){
+		alert("아이디를  입력해주세요");
+	}
+	else if(password==""){
+		alert("비밀번호를  입력해주세요");
+	}
+	else{
+		$.ajax({
+			  url: 'http://localhost:8080/ajaxTest/html/login.do',
+			  type: 'post',
+			  contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+			  data: {id:id, password:password},
+			  dataType: "json",
+			  success: function(data){
+				    data.userLogin.forEach(function(ele){
+				    	if(ele.login){
+				    		sessionStorage.setItem("ID", id);
+				    		alert("반갑습니다 "+id +"님");
+				    		location.href="/ajaxTest/html/feedList.html";
+				    	}
+				    	else{
+				    		alert("아이디나 비밀번호가 틀립니다.");
+				    	}
+				    });
+			 }
+	    });
+	}
+}
+
+function logout(){
+	sessionStorage.setItem("ID", null);
+	location.reload();
+}
+
+$(function(){
+	var id=sessionStorage.getItem( "ID" );
+	if(id==null || id=="null"){
+		$('<li/>').html('<a href="login.html">로그인</a>')
+		.appendTo($('.header').find('ul'));
+	}
+	else{
+		$('<li/>').html('<a href="#" onclick="logout()">로그아웃</a>')
+		.appendTo($('.header').find('ul'));
+	}
+});
+</script>
+</head>
+<body>
+<div class="header">
+    <img src="../imgs/logo.png"/>
+	<ul>
+		<li><a href="#">처음으로</a></li>
+		<li><a href="#">객실안내</a></li>
+		<li><a href="feedList.html">커뮤니티</a></li>
+	</ul>
+</div>
+<div class="content">
+    <h1>USER</h1>
+	<h2>로그인</h2>
+    <div class="loginbox">
+        <h1>로그인</h1>
+        <label for="loginid" class="labelid">아이디</label>
+        <input type="text" id="loginid" name="id"><br/>
+        <label for="loginpw" class="labelpw">패스워드</label>
+        <input type="password" id="loginpw" name="password">
+        <div class="search">
+            <span class="text">아이디 또는 비밀번호를 잊으셨나요?</span>
+            <a href="#">ID/PW 찾기</a>
+            <a>|</a>
+            <a href="join.html">회원가입</a>
+        </div>
+        <div class="btnwrap">
+            <input type="submit" value="로그인" onclick="login()" id="loginbtn">
+        </div>
+    </div>
+</div>
+</body>
+</html>

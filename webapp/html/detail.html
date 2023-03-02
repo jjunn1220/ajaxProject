@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="../css/header.css">
+<link rel="stylesheet" href="../css/detail.css">
+<script type="text/javascript" src="../js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript">
+//url에 있는 파라미터 값을 받아오기 위한 function
+function getParam(sname) {
+    var params = location.search.substr(location.search.indexOf("?") + 1);
+    var sval = "";
+    params = params.split("&");
+    for (var i = 0; i < params.length; i++) {
+        temp = params[i].split("=");
+        if ([temp[0]] == sname) { sval = temp[1]; }
+    }
+    return sval;
+}
+
+
+var idNum=0;
+//통신에 성공했을시 실행 
+var sucFunc = function(data){
+	 data.detail.forEach(function(ele){
+		 //받아온 글의 상세정보를 저장
+		 $('#title').text(ele.title);
+		 $('#contentbox').text(ele.content);
+	 });
+	 data.comment.forEach(function(ele){
+		 //step이 0일 경우는 일반 댓글
+		 if(ele.step==0){
+			 $('.commentBox').append($('<br/>'));
+			 $('.commentBox').append($('<label for="title" style="font-size:20px;"/>').text(ele.writer));
+			 $('.commentBox').append($('<label for="title" style="font-size:12px;"/>').text(ele.addTime));
+			 $('.commentBox').append($('<br/>'));
+			 $('.commentBox').append($('<br/>'));
+			 $('.commentBox').append($('<label for="title" style="font-size:18px;"/>').text(ele.content));
+
+			 $('.commentBox').append($('<input type="button" id="recommentbtx" class="recommentbtn'+idNum+'" value="답글" onclick="recomment('+idNum+')"/>'));
+			 //댓글에 댓글을 입력하기 위한 포멧 
+			 $('.commentBox').append($('<br/>'));
+			 $('.commentBox').append($('<textarea style="margin:0px; margin-top:20px;" id="commentContent'+idNum+'" class="commentContent" />').css('display','none'));
+			 $('.commentBox').append($('<input type="submit" id="recomment" class="recomment'+idNum+'" value="답글" onclick="addReComment('+ele.ref+','+idNum+')"/>').css('display','none'));
+			 $('.commentBox').append($('<hr style="margin-top: 1%;width: 100%;"/>'));
+			 idNum=idNum+1;
+		 }else{
+			 //대댓글 추가하기 
+			 $('.commentBox').append($('<br/>'));
+			 $('.commentBox').append($('<label for="title" style="font-size:20px;"/>').text('\u00A0\u00A0\u00A0ㄴ'+ele.writer));
+			 $('.commentBox').append($('<label for="title" style="font-size:12px;"/>').text('\u00A0\u00A0\u00A0'+ele.addTime));
+			 $('.commentBox').append($('<br/>'));
+			 $('.commentBox').append($('<br/>'));
+			 $('.commentBox').append($('<label for="title" style="font-size:18px;"/>').text('\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'+ele.content));
+			 $('.commentBox').append($('<br/>'));
+			 $('.commentBox').append($('<br/>'));
+			 $('.commentBox').append($('<hr style="margin-top: 1%;width: 100%;"/>'));
+		 }
+	 });
+};
+var loginUser=sessionStorage.getItem( "ID" );
+var num=getParam("num");
+var writer=getParam("writer");
+//댓글에 대댓글을 달고 싶을 경우 눌렀을 때 대댓글을 달 수 있는 화면이 보이게 하기위한 function
+function recomment(idNum){
+	if(loginUser ==null || loginUser=="null"){
+		location.href="/ajaxTest/html/login.html";
+	}
+	else{
+		$('#commentContent'+idNum).show();
+		$('.recomment'+idNum).show();
+		$('.recommentbtn'+idNum).css('display','none');
+	}
+}
+//댓글 작성하기 위한 통신 부분 
+function addComment(){
+	var commentContent= $('.comment').val();
+	var commentWriter=loginUser;
+	if(loginUser ==null || loginUser =="null"){
+		location.href="/ajaxTest/html/login.html";
+	}
+	else if(commentContent==""){
+		alert("내용을 작성하세요");
+	}
+	else{
+		$.ajax({
+			  url: 'http://localhost:8080/ajaxTest/html/detail.do',
+			  type: 'post',
+			  contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+			  data: {commentContent:commentContent, commentWriter:commentWriter, num:num},
+			  dataType: "text",
+			  success: function(){
+				  alert("작성이 완료되었습니다.");
+				  location.reload();
+			  }
+		});
+	}
+}
+//대댓글 작성을 위한 부분 ref(댓글 번호)
+function addReComment(ref,idNum){
+	var commentContent= $('#commentContent'+idNum).val();
+	var commentWriter=loginUser;
+	if(commentContent==""){
+		alert("내용을 작성하세요");
+	}
+	else if(loginUser !=null || loginUser !="null"){
+		$.ajax({
+			  url: 'http://localhost:8080/ajaxTest/html/comment.do',
+			  type: 'post',
+			  contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+			  data: {commentContent:commentContent, commentWriter:commentWriter, num:num, ref:ref},
+			  dataType: "text",
+			  success: function(){
+				  alert("작성이 완료되었습니다.");
+				  location.reload();
+			  }
+		});
+	}
+	else{
+		 location.href="/ajaxTest/html/login.do";
+	}
+}
+//수정 버튼을 누를 경우 update.html 로 이동
+function update(){
+	location.href='update.html?num='+num;
+}
+//삭제 통신
+function deleteOne(){
+	var result = confirm('해당 게시글을 삭제하시겠습니까?');
+	if(result) {
+		$.ajax({
+			  url: 'http://localhost:8080/ajaxTest/html/delete.do',
+			  type: 'post',
+			  contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+			  data: {num:num},
+			  dataType: "text",
+			  success: function(){
+				  alert("삭제가 완료되었습니다.");
+				  location.href="feedList.html";
+			  }
+		});
+	}
+}
+//처음 detail부분 불러오기 
+var loading=function(num){
+	$.ajax({
+		  url: 'http://localhost:8080/ajaxTest/html/detail.do',
+		  type: 'get',
+		  contentType: "application/json; charset=utf-8",
+		  dataType: "json",
+		  data: {num:num},
+		  success: sucFunc
+	});
+	if(loginUser!=writer){
+		$('.UpdateBtn').css('display','none');
+		$('.deleteBtn').css('display','none');
+	}
+};
+function logout(){
+	sessionStorage.setItem("ID", null);
+	location.reload();
+}
+
+
+$(function(){
+	var id=sessionStorage.getItem( "ID" );
+	if(id==null|| id=="null"){
+		$('<li/>').html('<a href="login.html">로그인</a>')
+		.appendTo($('.header').find('ul'));
+	}
+	else{
+		$('<li/>').html('<a href="#" onclick="logout()">로그아웃</a>')
+		.appendTo($('.header').find('ul'));
+	}
+	loading(num);
+});
+</script>
+</head>
+<body>
+<div class="header">
+    <img src="../imgs/logo.png"/>
+	<ul>
+		<li><a href="#">처음으로</a></li>
+		<li><a href="#">객실안내</a></li>
+		<li><a href="feedList.html">커뮤니티</a></li>
+	</ul>
+</div>
+<div class="content">
+    <h1>COMMUNITY</h1>
+	<h2>글 내용</h2>
+    <div class="uploadbox">
+            <label id="title" style = "font-size:x-large"></label>
+            <hr style="color: #74613f">
+            <label id="contentbox" style="width:90%; height: 250px; resize:none; border: white; font-size:20px;">
+            </label>
+            <br/> <br/>
+    </div>
+    <div class="btnwrap">
+           <br/>
+	           <button type="submit" class="UpdateBtn" style="margin-left: 40%;" onclick="update()">수정</button>
+	           <button type="submit" class="deleteBtn" onclick="deleteOne()">삭제</button>
+           <br/>
+           <br/>
+    </div>
+    <div class="commentbox">
+        <h1>댓글</h1>
+        <label></label>   
+        <textarea class="comment"></textarea>
+        <br/><br/>
+        <input type="submit" id="commentbtn" value="댓글"name="comment" onclick="addComment()"/>
+    </div>   
+    	<div class="commentBox">
+        </div>
+        <br/><br/> 
+    </div> 
+</div>
+</body>
+</html>
